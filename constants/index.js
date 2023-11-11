@@ -1,34 +1,17 @@
-// Lista de productos en formato JSON
-const products = [
-    {
-        title: 'Nike Air Jordan 1 Low',
-        price: '$180',
-    },
-    {
-        title: 'Nike Dunk Low Panda',
-        price: '$120',
-    },
-    {
-        title: 'Nike Jordan 1 High Taxi',
-        price: '$250',
-    },
-    {
-        title: 'Nike Jordan 4 Red Cement',
-        price: '$290',
-    },
-    {
-        title: 'Nike Air Force 1 Total White',
-        price: '$150',
-    },
-    {
-        title: 'Nike Air Jordan 3 Dark Iris',
-        price: '$150',
-    },
-];
+// Cargar productos desde el archivo JSON local utilizando Axios
+const loadProducts = async () => {
+    try {
+        const response = await axios.get('scripts/products.json');
+        const productsData = response.data;
 
-// Almacenar la lista de productos en el localStorage
+        localStorage.setItem('productsList', JSON.stringify(productsData));
+    } catch (error) {
+        console.error('Error al cargar los productos:', error.message);
+    }
+};
 
-localStorage.setItem('productsList', JSON.stringify(products));
+// Llamada a la función para cargar productos al inicio de la página
+loadProducts();
 
 const btnCart = document.querySelector('.container-cart-icon');
 const containerCartProducts = document.querySelector('.container-cart-products');
@@ -40,11 +23,7 @@ btnCart.addEventListener('click', () => {
 const cartInfo = document.querySelector('.cart-product');
 const rowProduct = document.querySelector('.row-product');
 
-// Lista de todos los contenedores de productos
-
 const productsList = document.querySelector('.container-items');
-
-// Variable de arreglos de Productos
 
 let allProducts = [];
 
@@ -55,9 +34,9 @@ const countProducts = document.querySelector('#contador-productos');
 const cartEmpty = document.querySelector('.cart-empty');
 const cartTotal = document.querySelector('.cart-total');
 
-productsList.addEventListener('click', (e) => {
-    if (e.target.classList.contains('btn-add-cart')) {
-        const product = e.target.parentElement;
+productsList.addEventListener('click', (event) => {
+    if (event.target.classList.contains('btn-add-cart')) {
+        const product = event.target.parentElement;
 
         const infoProduct = {
             quantity: 1,
@@ -70,7 +49,7 @@ productsList.addEventListener('click', (e) => {
         );
 
         if (exists) {
-            const products = allProducts.map((product) => {
+            const updatedProducts = allProducts.map((product) => {
                 if (product.title === infoProduct.title) {
                     product.quantity++;
                     return product;
@@ -78,7 +57,7 @@ productsList.addEventListener('click', (e) => {
                     return product;
                 }
             });
-            allProducts = [...products];
+            allProducts = [...updatedProducts];
         } else {
             allProducts = [...allProducts, infoProduct];
         }
@@ -87,9 +66,9 @@ productsList.addEventListener('click', (e) => {
     }
 });
 
-rowProduct.addEventListener('click', (e) => {
-    if (e.target.classList.contains('icon-close')) {
-        const product = e.target.parentElement;
+rowProduct.addEventListener('click', (event) => {
+    if (event.target.classList.contains('icon-close')) {
+        const product = event.target.parentElement;
         const title = product.querySelector('p').textContent;
 
         allProducts = allProducts.filter(
@@ -100,25 +79,17 @@ rowProduct.addEventListener('click', (e) => {
     }
 });
 
-// Agregar evento de escucha para el botón "completar compra"
-
-
 const btnCompletePurchase = document.querySelector('.btn-complete-purchase');
 
 btnCompletePurchase.addEventListener('click', () => {
     if (allProducts.length === 0) {
         alert('Tu carrito está vacío. Agrega productos antes de completar la compra.');
     } else {
-        
-
         allProducts = [];
         showHTML();
         alert('¡Gracias por tu compra!');
     }
 });
-
-// Funcion para mostrar HTML
-
 
 const showHTML = () => {
     if (!allProducts.length) {
@@ -130,8 +101,6 @@ const showHTML = () => {
         rowProduct.classList.remove('hidden');
         cartTotal.classList.remove('hidden');
     }
-
-    // Limpiar HTML
 
     rowProduct.innerHTML = '';
 
@@ -173,13 +142,8 @@ const showHTML = () => {
     valorTotal.innerText = `$${total}`;
     countProducts.innerText = totalOfProducts;
 
-    // Almacenar el carrito en el localStorage
-    
     localStorage.setItem('shoppingCart', JSON.stringify(allProducts));
 };
-
-// Cargar productos del localStorage cuando inicio la página
-
 
 const savedShoppingCart = localStorage.getItem('shoppingCart');
 if (savedShoppingCart) {
